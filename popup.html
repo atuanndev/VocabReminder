@@ -20,10 +20,19 @@
     .word-title { font-weight: bold; color: #8b0000; font-size: 16px; }
     .word-realm { font-size: 12px; color: #2e7d32; font-style: italic; }
     .delete-btn { background: #d32f2f; color: white; border: none; padding: 4px 8px; cursor: pointer; font-size: 12px; border-radius: 3px; }
+    
+    /* Căn lề cho nút Bật/Tắt */
+    .toggle-container { text-align: center; margin-bottom: 15px; margin-top: 10px; }
+    #toggleActiveBtn { padding: 8px 15px; border: 2px solid #3e2723; border-radius: 5px; font-weight: bold; cursor: pointer; font-family: 'Times New Roman', serif; font-size: 14px; width: 100%; transition: 0.3s;}
   </style>
 </head>
 <body>
   <h2>Thiên Thư Các</h2>
+  
+  <!-- CƠ QUAN KHỐNG CHẾ TRẬN PHÁP -->
+  <div class="toggle-container">
+    <button id="toggleActiveBtn">Đang Tụ Khí...</button>
+  </div>
   
   <div class="tabs">
     <button class="tab-btn active" id="tabAdd">Truyền Thụ</button>
@@ -38,7 +47,6 @@
       <button id="saveLimitBtn" style="background: #2e7d32; color: white; border: none; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold; margin-left: 5px;">Lưu</button>
     </div>
 
-    <!-- Đã bổ sung ô nhập Thuộc tính (Từ loại) -->
     <input type="text" id="word" class="text-input" placeholder="Tây Ngữ (VD: Enhance)">
     <input type="text" id="wordType" class="text-input" placeholder="Thuộc tính (VD: v, adj, n...)">
     <input type="text" id="meaning" class="text-input" placeholder="Đông Ngữ (VD: Nâng cao)">

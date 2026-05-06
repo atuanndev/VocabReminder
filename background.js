@@ -1,7 +1,7 @@
-// Thiết lập mặc định 10 từ/ngày nếu đại nhân chưa cài đặt
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.local.get(['dailyNewLimit'], (res) => {
+    chrome.storage.local.get(['dailyNewLimit', 'isActive'], (res) => {
         if (!res.dailyNewLimit) chrome.storage.local.set({dailyNewLimit: 10});
+        if (res.isActive === undefined) chrome.storage.local.set({isActive: true}); // Mặc định là bật
     });
 });
 
@@ -12,13 +12,15 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 function triggerReview() {
-    chrome.storage.local.get(['vocabList', 'dailyNewLimit', 'dailyCount', 'lastStudyDate'], function(result) {
+    chrome.storage.local.get(['isActive', 'vocabList', 'dailyNewLimit', 'dailyCount', 'lastStudyDate'], function(result) {
+        // KIỂM TRA LỆNH BÀI: Nếu đang "Bế Quan" (isActive = false) thì lui binh ngay lập tức
+        if (result.isActive === false) return; 
+
         const vocabList = result.vocabList || [];
         const dailyLimit = result.dailyNewLimit || 10;
         let dailyCount = result.dailyCount || 0;
         let lastStudyDate = result.lastStudyDate || new Date().toDateString();
 
-        // Kiểm tra xem đã sang ngày mới chưa, nếu sang thì reset biến đếm
         const today = new Date().toDateString();
         if (today !== lastStudyDate) {
             dailyCount = 0; 
@@ -27,18 +29,14 @@ function triggerReview() {
         }
 
         const now = Date.now();
-        
-        // Chia làm 2 loại: Từ cũ đến hạn ôn & Từ mới tinh chưa học
         const dueReviews = vocabList.filter(w => w.repetitions > 0 && w.nextReview <= now);
         const newWords = vocabList.filter(w => w.repetitions === 0);
 
         let wordToReview = null;
 
         if (dueReviews.length > 0) {
-            // Ưu tiên ôn lại các từ cũ đã đến hạn (chọn ngẫu nhiên 1 từ)
             wordToReview = dueReviews[Math.floor(Math.random() * dueReviews.length)];
         } else if (newWords.length > 0 && dailyCount < dailyLimit) {
-            // Nếu không có từ cũ cần ôn, VÀ đại nhân vẫn còn lượt học từ mới hôm nay
             wordToReview = newWords[0]; 
         }
 
@@ -55,7 +53,6 @@ function triggerReview() {
     });
 }
 
-// Bắt tin nhắn khi đại nhân trả lời xong
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "updateWord") {
         chrome.storage.local.get(['vocabList', 'dailyCount'], function(result) {
@@ -64,13 +61,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const wordIndex = vocabList.findIndex(w => w.id === request.wordId);
             
             if (wordIndex !== -1) {
-                // Kiểm tra xem đây có phải là từ mới học lần đầu tiên không
                 const isFirstTimeLearning = vocabList[wordIndex].repetitions === 0 && request.quality >= 3;
                 
-                // Cập nhật chỉ số SM-2 cường độ cao
                 vocabList[wordIndex] = updateWordIntense(vocabList[wordIndex], request.quality);
                 
-                // Trừ đi 1 lượt từ mới trong ngày nếu học thành công
                 if (isFirstTimeLearning) {
                     dailyCount++;
                     chrome.storage.local.set({ dailyCount: dailyCount });
@@ -82,28 +76,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// Thuật toán Spaced Repetition Cường Độ Cao (Tính bằng mili-giây)
 function updateWordIntense(wordObj, quality) {
     const minInMs = 60 * 1000;
     const hourInMs = 60 * minInMs;
     const dayInMs = 24 * hourInMs;
 
-    if (!wordObj.intervalMs) wordObj.intervalMs = 15 * minInMs; // Gán mặc định nếu chưa có
+    if (!wordObj.intervalMs) wordObj.intervalMs = 15 * minInMs;
 
     if (quality >= 3) {
         if (wordObj.repetitions === 0) {
-            wordObj.intervalMs = 15 * minInMs; // Lần 1: Nhắc lại sau 15 phút
+            wordObj.intervalMs = 15 * minInMs; 
         } else if (wordObj.repetitions === 1) {
-            wordObj.intervalMs = 2 * hourInMs; // Lần 2: Nhắc lại sau 2 tiếng
+            wordObj.intervalMs = 2 * hourInMs; 
         } else if (wordObj.repetitions === 2) {
-            wordObj.intervalMs = 1 * dayInMs;  // Lần 3: Nhắc lại sau 1 ngày
+            wordObj.intervalMs = 1 * dayInMs;  
         } else {
-            // Từ lần 4 trở đi, tính theo ngày như bình thường
             wordObj.intervalMs = Math.round(wordObj.intervalMs * wordObj.easeFactor); 
         }
         wordObj.repetitions += 1;
     } else {
-        // Nếu sai, phế tu vi về 0 và bắt ôn lại sau 15 phút
         wordObj.repetitions = 0;
         wordObj.intervalMs = 15 * minInMs; 
     }

@@ -3,7 +3,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabManage = document.getElementById('tabManage');
   const sectionAdd = document.getElementById('sectionAdd');
   const sectionManage = document.getElementById('sectionManage');
+  const toggleActiveBtn = document.getElementById('toggleActiveBtn');
 
+  // ==========================================
+  // LỆNH BÀI KHỐNG CHẾ (BẬT/TẮT TRẬN PHÁP)
+  // ==========================================
+  // Khởi tạo trạng thái ban đầu (mặc định là Bật)
+  chrome.storage.local.get(['isActive'], (res) => {
+    let isActive = res.isActive !== false; 
+    updateToggleButton(isActive);
+  });
+
+  // Khi đại nhân bấm Lệnh Bài
+  toggleActiveBtn.addEventListener('click', () => {
+    chrome.storage.local.get(['isActive'], (res) => {
+      let currentStatus = res.isActive !== false;
+      let newStatus = !currentStatus;
+      chrome.storage.local.set({isActive: newStatus}, () => {
+        updateToggleButton(newStatus);
+      });
+    });
+  });
+
+  // Cập nhật giao diện Lệnh Bài
+  function updateToggleButton(isActive) {
+    if (isActive) {
+      toggleActiveBtn.innerText = "Trận Pháp: ĐANG HOẠT ĐỘNG";
+      toggleActiveBtn.style.background = "#2e7d32"; // Xanh lá
+      toggleActiveBtn.style.color = "white";
+    } else {
+      toggleActiveBtn.innerText = "Trận Pháp: ĐANG BẾ QUAN (Tắt)";
+      toggleActiveBtn.style.background = "#d32f2f"; // Đỏ
+      toggleActiveBtn.style.color = "white";
+    }
+  }
+
+  // ==========================================
+  // CÁC CHỨC NĂNG CŨ KHÔNG ĐỔI
+  // ==========================================
   chrome.storage.local.get(['dailyNewLimit'], (res) => {
     if (res.dailyNewLimit) document.getElementById('dailyLimitInput').value = res.dailyNewLimit;
   });
@@ -30,10 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadWordList();
   });
 
-  // Thêm từ thủ công có chứa Từ loại
   document.getElementById('addBtn').addEventListener('click', () => {
     const word = document.getElementById('word').value.trim();
-    const wordType = document.getElementById('wordType').value.trim(); // Nhận từ loại
+    const wordType = document.getElementById('wordType').value.trim();
     const meaning = document.getElementById('meaning').value.trim();
     
     if (!word || !meaning) { document.getElementById('status').innerText = "Thiếu khẩu quyết!"; return; }
@@ -76,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (wordObj.repetitions >= 4) realm = "Kim Đan";
         if (wordObj.repetitions >= 6) realm = "Nguyên Anh";
 
-        // Chuẩn bị chuỗi từ loại để hiển thị nếu có
         const typeStr = wordObj.type ? ` <span style="color:#555; font-style:italic;">${wordObj.type}</span>` : '';
 
         const item = document.createElement('div');
@@ -101,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Import JSON có đọc thêm Thuộc tính (type)
   document.getElementById('importFile').addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -117,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
               vocabList.push({
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
                 word: item.word.trim(), 
-                type: item.type ? item.type.trim() : "", // Lấy từ loại nếu ngọc giản có ghi
+                type: item.type ? item.type.trim() : "", 
                 meaning: item.meaning.trim(),
                 repetitions: 0, easeFactor: 2.5, intervalMs: 0, nextReview: Date.now()
               });
