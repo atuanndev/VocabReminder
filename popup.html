@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 350px; padding: 10px; font-family: 'Times New Roman', serif; background-color: #f4e4c1; color: #3e2723; border: 3px double #8b0000; }
+    h2 { text-align: center; color: #8b0000; border-bottom: 2px solid #8b0000; padding-bottom: 5px; margin-top: 0; }
+    .tabs { display: flex; justify-content: space-around; margin-bottom: 15px; }
+    .tab-btn { background: #3e2723; color: #f4e4c1; border: 1px solid #8b0000; padding: 8px 15px; cursor: pointer; font-weight: bold; border-radius: 3px; }
+    .tab-btn:hover, .tab-btn.active { background: #8b0000; }
+    .section { display: none; }
+    .section.active { display: block; }
+    input.text-input { width: 92%; margin-bottom: 10px; padding: 8px; border: 1px solid #8b0000; background: #fffcf0; font-family: 'Times New Roman', serif; }
+    button.action-btn { width: 100%; padding: 10px; background: #8b0000; color: #f4e4c1; border: none; cursor: pointer; font-weight: bold; font-size: 16px; border-radius: 3px; margin-top: 5px;}
+    button.action-btn:hover { background: #a52a2a; }
+    #status { text-align: center; color: #d32f2f; font-weight: bold; font-style: italic; }
+    .word-list { max-height: 250px; overflow-y: auto; border: 1px solid #8b0000; padding: 5px; background: #fffcf0; }
+    .word-item { border-bottom: 1px dashed #8b0000; padding: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+    .word-info { flex-grow: 1; }
+    .word-title { font-weight: bold; color: #8b0000; font-size: 16px; }
+    .word-realm { font-size: 12px; color: #2e7d32; font-style: italic; }
+    .delete-btn { background: #d32f2f; color: white; border: none; padding: 4px 8px; cursor: pointer; font-size: 12px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h2>Thiên Thư Các</h2>
+  
+  <div class="tabs">
+    <button class="tab-btn active" id="tabAdd">Truyền Thụ</button>
+    <button class="tab-btn" id="tabManage">Tàng Kinh Các</button>
+  </div>
+
+  <div id="sectionAdd" class="section active">
+    <div style="background: #e9dac0; padding: 8px; border-radius: 3px; text-align: center; margin-bottom: 15px; border: 1px solid #8b0000;">
+      <span style="font-weight: bold; font-size: 14px;">Giới hạn học:</span> 
+      <input type="number" id="dailyLimitInput" min="1" max="100" style="width: 40px; text-align: center; padding: 4px; border: 1px solid #8b0000;"> 
+      <span style="font-size: 14px;">từ mới/ngày</span>
+      <button id="saveLimitBtn" style="background: #2e7d32; color: white; border: none; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold; margin-left: 5px;">Lưu</button>
+    </div>
+
+    <!-- Đã bổ sung ô nhập Thuộc tính (Từ loại) -->
+    <input type="text" id="word" class="text-input" placeholder="Tây Ngữ (VD: Enhance)">
+    <input type="text" id="wordType" class="text-input" placeholder="Thuộc tính (VD: v, adj, n...)">
+    <input type="text" id="meaning" class="text-input" placeholder="Đông Ngữ (VD: Nâng cao)">
+    
+    <button id="addBtn" class="action-btn">Luyện Hóa Bí Kíp</button>
+    <p id="status"></p>
+
+    <hr style="border: 1px dashed #8b0000; margin: 15px 0;">
+    <h3 style="text-align: center; color: #8b0000; font-size: 16px; margin-bottom: 10px;">Dung Hợp Bí Kíp (Import Pack .JSON)</h3>
+    <input type="file" id="importFile" accept=".json" style="border: none; background: transparent; padding: 0; margin-bottom: 5px;">
+    <p id="importStatus" style="text-align: center; color: #2e7d32; font-weight: bold; font-style: italic; font-size: 13px;"></p>
+  </div>
+
+  <div id="sectionManage" class="section">
+    <div class="word-list" id="wordListContainer"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

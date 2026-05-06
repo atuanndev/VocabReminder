@@ -1,0 +1,37 @@
+#vocab-reminder-overlay {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important;
+    background: rgba(15, 10, 5, 0.92) !important;
+    z-index: 2147483647 !important;
+    display: flex !important; justify-content: center !important; align-items: center !important;
+    backdrop-filter: blur(5px) !important;
+}
+
+#vocab-reminder-overlay .vocab-box {
+    background: #f4e4c1 !important; /* Màu giấy thư pháp */
+    padding: 40px !important;
+    border: 6px double #8b0000 !important; /* Viền kép đỏ đậm */
+    border-radius: 5px !important;
+    text-align: center !important;
+    box-shadow: 0 0 40px rgba(139,0,0,0.4) !important;
+    font-family: 'Times New Roman', serif !important;
+    max-width: 450px !important; width: 100% !important;
+    color: #3e2723 !important;
+}
+
+#vocab-reminder-overlay h2 { color: #8b0000 !important; font-size: 24px !important; border-bottom: 2px solid #8b0000 !important; padding-bottom: 10px !important; }
+#vocab-reminder-overlay .vocab-word { font-size: 45px !important; color: #000 !important; margin: 25px 0 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important; font-weight: bold !important; }
+#vocab-reminder-overlay input { 
+    width: 85% !important; padding: 12px !important; font-size: 18px !important; 
+    margin-bottom: 20px !important; border: 2px solid #8b0000 !important; 
+    background: #fffcf0 !important; outline: none !important; 
+    font-family: 'Times New Roman', serif !important; text-align: center !important;
+}
+#vocab-reminder-overlay input:focus { box-shadow: 0 0 10px rgba(139,0,0,0.5) !important; }
+#vocab-reminder-overlay button { 
+    background: #8b0000 !important; color: #f4e4c1 !important; border: 1px solid #3e2723 !important; 
+    padding: 12px 30px !important; font-size: 20px !important; border-radius: 3px !important; 
+    cursor: pointer !important; font-weight: bold !important; font-family: 'Times New Roman', serif !important;
+}
+#vocab-reminder-overlay button:hover { background: #a52a2a !important; }
+#vocab-reminder-overlay #vocab-feedback { margin-top: 20px !important; font-weight: bold !important; font-size: 18px !important; font-style: italic !important; }

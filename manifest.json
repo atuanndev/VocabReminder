@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Thiên Thư Các - VocabReminder",
+  "version": "1.0",
+  "description": "Tiện ích lặp lại ngắt quãng SM-2 do thuộc hạ dâng lên đại nhân.",
+  "permissions": ["storage", "alarms"],
+  "icons": {
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["content.css"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon.png"
+    }
+  }
+}
